@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Support Details — Browser diagnostics</title>
+  <meta name="description" content="See your browser, operating system and display details in one support report.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Support Details</h1>
+        <p>Get the browser and device information you need for a support request.</p>
+      </div>
+      <div class="actions" id="actions" hidden>
+        <button id="csv" type="button">Export CSV</button>
+        <button id="png" type="button">Export PNG</button>
+      </div>
+    </header>
+    <noscript><p>Enable JavaScript to detect and export the full report.</p></noscript>
+    <div class="report">
+      <section aria-labelledby="device">
+        <h2 id="device">Device</h2>
+        <dl>
+          <dt>Operating system</dt><dd id="os">Unavailable</dd>
+          <dt>Screen size</dt><dd id="resolution">Unavailable</dd>
+          <dt>Viewport size</dt><dd id="viewport">Unavailable</dd>
+          <dt>Color depth</dt><dd id="depth">Unavailable</dd>
+        </dl>
+      </section>
+      <section aria-labelledby="browser-title">
+        <h2 id="browser-title">Browser</h2>
+        <dl>
+          <dt>Web browser</dt><dd id="browser">Unavailable</dd>
+          <dt>Language</dt><dd id="language">Unavailable</dd>
+          <dt>WebSockets supported</dt><dd id="websocket">Unavailable</dd>
+          <dt>WebGL supported</dt><dd id="webgl">Unavailable</dd>
+        </dl>
+      </section>
+      <section aria-labelledby="settings">
+        <h2 id="settings">Connection &amp; settings</h2>
+        <dl>
+          <dt>IP address</dt><dd id="ip">Unavailable</dd>
+          <dt>JavaScript enabled</dt><dd id="javascript">No</dd>
+          <dt>Cookies enabled</dt><dd id="cookies">Unavailable</dd>
+          <dt>AdBlock enabled</dt><dd id="adblock">Unavailable</dd>
+        </dl>
+      </section>
+      <section class="user-agent">
+        <dl>
+          <dt>User agent</dt><dd id="ua">Unavailable</dd>
+        </dl>
+      </section>
+    </div>
+    <footer>
+        <span>Brought to you by your friends at <a href="https://oak.is/">oak</a>, contribute on <a href="https://github.com/oakstudios/supportdetails.com">GitHub</a>.</span>
+        <span>Ad-free and tracker-free.</span>
+      </footer>
+    <div id="export-status" role="status" aria-atomic="true"></div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" integrity="sha384-ZZ1pncU3bQe8y31yfZdMFdSpttDoPmOZg2wguVK9almUodir1PghgT0eY7Mrty8H" crossorigin="anonymous"></script>
+  <script src="app.js"></script>
+</body>
+</html>
