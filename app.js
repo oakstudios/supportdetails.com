@@ -59,28 +59,62 @@ try {
 
 /* Ad blocking */
 
-// Common ad selectors and a same-origin probe provide an estimate.
-set('adblock', 'Checking…');
+// EasyList hides #ad-banner-top and blocks /admanager.js as a script.
+function checkAdBlocking() {
+  set('adblock', 'Checking…');
 
-const bait = document.createElement('div');
-bait.className = 'adblock-probe adsbox ad-banner adsbygoogle';
-bait.setAttribute('aria-hidden', 'true');
-document.body.append(bait);
+  const bait = document.createElement('div');
+  bait.id = 'ad-banner-top';
+  bait.className = 'adblock-probe adsbox ad-banner adsbygoogle';
+  bait.setAttribute('aria-hidden', 'true');
+  document.body.append(bait);
 
-requestAnimationFrame(() => {
-  const style = getComputedStyle(bait);
-  const hidden = !bait.offsetHeight || style.visibility === 'hidden' || style.display === 'none';
-  const local = location.protocol === 'file:';
-  if (hidden || local) {
-    set('adblock', hidden ? 'Yes (estimated)' : 'No (estimated)');
-  } else {
-    fetch('./ads.js', {cache: 'no-store', signal: AbortSignal.timeout(3500)})
-      .then(response => set('adblock', response.ok ? 'No (estimated)' : 'Unavailable'))
-      .catch(error => set('adblock', error.name === 'TimeoutError' || !navigator.onLine
-        ? 'Unavailable' : 'Yes (estimated)'));
+  const probe = document.createElement('script');
+  let scriptResult;
+  let timer;
+
+  function finish(result) {
+    clearTimeout(timer);
+    bait.remove();
+    probe.remove();
+    set('adblock', result);
   }
-  bait.remove();
-});
+
+  function updateResult() {
+    const style = getComputedStyle(bait);
+    const hidden = !bait.offsetHeight || style.visibility === 'hidden' || style.display === 'none';
+
+    if (hidden || scriptResult === 'blocked') {
+      finish('Yes (estimated)');
+    } else if (scriptResult === 'loaded') {
+      finish('No (estimated)');
+    } else {
+      finish('Unavailable');
+    }
+  }
+
+  // Keep the element in the DOM briefly so extensions can apply hiding rules.
+  const checkAfter = performance.now() + 600;
+  function scriptFinished(result) {
+    scriptResult = result;
+    clearTimeout(timer);
+    timer = setTimeout(updateResult, Math.max(0, checkAfter - performance.now()));
+  }
+
+  timer = setTimeout(updateResult, 3500);
+  if (location.protocol === 'file:') {
+    scriptFinished('loaded');
+    return;
+  }
+
+  probe.src = './admanager.js';
+  probe.onload = () => scriptFinished('loaded');
+  probe.onerror = () => scriptFinished(navigator.onLine ? 'blocked' : 'unavailable');
+  document.head.append(probe);
+}
+
+checkAdBlocking();
+
 set('javascript', 'Yes');
 set('cookies', navigator.cookieEnabled ? 'Yes' : 'No');
 
